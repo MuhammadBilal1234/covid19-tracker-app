@@ -16,16 +16,13 @@ export default class App extends Component {
   };
 
   handleCountryChange = async (countrys) => {
-    const {
-      confirmed,
-      deaths,
-      recovered,
-      lastUpdate,
-      country,
-    } = await fetchdata(countrys);
+    const { confirmed, deaths, recovered, lastUpdate } = await fetchdata(
+      countrys
+    );
 
-    console.log(countrys);
-
+    /*
+for country
+*/
     this.setState({
       confirmed,
       recovered,
