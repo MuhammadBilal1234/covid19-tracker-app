@@ -1,26 +1,63 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { fetchdata } from "./components/api/covidapi";
+import logo from "./img/image.png";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Cards from "./components/Card/Cards";
+import Chart from "./components/Chart/Chart";
+import Country from "./components/Country/Country.js";
+
+export default class App extends Component {
+  state = {
+    confirmed: "",
+    recovered: "",
+    deaths: "",
+    lastUpdate: "",
+    country: null,
+  };
+
+  handleCountryChange = async (countrys) => {
+    const {
+      confirmed,
+      deaths,
+      recovered,
+      lastUpdate,
+      country,
+    } = await fetchdata(countrys);
+
+    console.log(countrys);
+
+    this.setState({
+      confirmed,
+      recovered,
+      deaths,
+      lastUpdate,
+      country: countrys,
+    });
+  };
+
+  async componentDidMount() {
+    const { confirmed, deaths, recovered, lastUpdate } = await fetchdata();
+
+    this.setState({
+      confirmed,
+      recovered,
+      deaths,
+      lastUpdate,
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <img
+          src={logo}
+          style={{ display: "block", margin: "auto", marginBottom: "50px" }}
+          alt="Covid-19"
+        />
+        <Cards state={this.state} />
+        <Country handleCountryChange={this.handleCountryChange} />
+        <Chart state={this.state} />
+      </div>
+    );
+  }
 }
-
-export default App;

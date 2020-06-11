@@ -1,0 +1,80 @@
+import React, { useState, useEffect } from "react";
+import { fetchDataDaily } from "../api/covidapi";
+import { Line, Bar } from "react-chartjs-2";
+
+const Chart = (props) => {
+  const [dailyData, setDailyData] = useState([]);
+
+  useEffect(() => {
+    const fetchAPI = async () => {
+      setDailyData(await fetchDataDaily());
+    };
+
+    fetchAPI();
+  }, []);
+
+  const lineChart =
+    dailyData.length !== 0 ? (
+      <Line
+        data={{
+          labels: dailyData.map(({ date }) => date),
+          datasets: [
+            {
+              data: dailyData.map(({ confirmed }) => confirmed),
+              label: "Infected",
+              borderColor: "#333ff",
+              fill: true,
+            },
+
+            {
+              data: dailyData.map(({ deaths }) => deaths),
+              label: "Deaths",
+              borderColor: "red",
+              backgroundColor: "rgba(255,0,0,0.5)",
+              fill: true,
+            },
+          ],
+        }}
+      />
+    ) : null;
+
+  console.log(props.state.recoverd, props.state.deaths);
+
+  const barChart = props.state.confirmed ? (
+    <Bar
+      data={{
+        labels: ["Infected", "Recoverd", "Deaths"],
+        datasets: [
+          {
+            label: "People",
+            backgroundColor: [
+              "rgba(0,0,255,0.5)",
+              "rgba(0,255,0,0.5)",
+              "rgba(255,0,0,0.5)",
+            ],
+            data: [
+              props.state.confirmed.value,
+              props.state.recovered.value,
+              props.state.deaths.value,
+            ],
+          },
+        ],
+      }}
+      options={{
+        legend: { display: false },
+        title: {
+          display: true,
+          text: `Current State in ${props.state.country}`,
+        },
+      }}
+    />
+  ) : null;
+
+  return (
+    <div style={{ width: "80%", margin: "auto", marginTop: "25px" }}>
+      {props.state.country ? barChart : lineChart}
+    </div>
+  );
+};
+
+export default Chart;
